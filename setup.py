@@ -1,10 +1,10 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="youtube-reddit_sentiment_analysis",
+    name="youtube_sentiment_analysis",
     version="0.1.0",
     author="Jeel Vaghasiya",
-    description="An MLOps pipeline using a Stacking Classifier for YouTube & Reddit comment sentiment insights.",
+    description="An MLOps pipeline using a Stacking Classifier for YouTube comment sentiment insights.",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
