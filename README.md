@@ -32,29 +32,49 @@ The goal of this project is to build a robust sentiment classifier for YouTube c
 ## Project Architecture
 
 ```
-                ┌──────────────────┐
-                │ dataset/sentiments.csv │
-                └─────────┬────────┘
-                          │
-                 ┌────────▼─────────┐
-                 │  Data Ingestion   │  → train/test split (data/raw)
-                 └────────┬─────────┘
-                          │
-                 ┌────────▼─────────┐
-                 │ Data Preprocessing│  → clean/lemmatize (data/interim)
-                 └────────┬─────────┘
-                          │
-                 ┌────────▼─────────┐
-                 │  Model Building   │  → TF-IDF + Stacking Classifier
-                 └────────┬─────────┘
-                          │
-                 ┌────────▼─────────┐
-                 │ Model Evaluation  │  → metrics + confusion matrix → MLflow
-                 └────────┬─────────┘
-                          │
-                 ┌────────▼─────────┐
-                 │ Model Registration│  → MLflow Model Registry (Staging)
-                 └───────────────────┘
+                              ┌──────────────────────────────┐
+                              │   dataset/sentiments.csv     │
+                              └──────────────┬───────────────┘
+                                             │
+                                             ▼
+                              ┌──────────────────────────────┐
+                              │       Data Ingestion         │
+                              │  • Load Dataset              │
+                              │  • Train/Test Split          │
+                              │  → data/raw                  │
+                              └──────────────┬───────────────┘
+                                             │
+                                             ▼
+                              ┌──────────────────────────────┐
+                              │     Data Preprocessing       │
+                              │  • Text Cleaning             │
+                              │  • Stopword Removal          │
+                              │  • Lemmatization             │
+                              │  → data/interim              │
+                              └──────────────┬───────────────┘
+                                             │
+                                             ▼
+                              ┌──────────────────────────────┐
+                              │      Model Building          │
+                              │  • TF-IDF Vectorization      │
+                              │  • Stacking Classifier       │
+                              │  → Train Model               │
+                              └──────────────┬───────────────┘
+                                             │
+                                             ▼
+                              ┌──────────────────────────────┐
+                              │      Model Evaluation        │
+                              │  • Accuracy / F1 Score       │
+                              │  • Confusion Matrix          │
+                              │  • Log Metrics to MLflow     │
+                              └──────────────┬───────────────┘
+                                             │
+                                             ▼
+                              ┌──────────────────────────────┐
+                              │    Model Registration        │
+                              │  • MLflow Model Registry     │
+                              │  • Register in Staging       │
+                              └──────────────────────────────┘
 ```
 
 All stages are orchestrated by **DVC** (`dvc.yaml` / `dvc.lock`) so the entire pipeline can be reproduced with a single command, and every run is versioned end-to-end (code, data, parameters, and model artifacts).
@@ -154,7 +174,7 @@ Each experiment is logged to MLflow for side-by-side comparison of parameters an
 - **Experiment Tracking / Registry:** MLflow (remote tracking server on AWS EC2)
 - **Data & Pipeline Versioning:** DVC (with S3-compatible remote support via `dvc[s3]`)
 - **Serving:** Flask, Flask-CORS
-- **Data Source:** Google API Client (`google-api-python-client`) for pulling YouTube data
+- **Data Source:** `YouTube Data API v3` (via the YouTube API Client) for retrieving video metadata, comments, and other YouTube data.
 - **Containerization:** Docker
 - **CI/CD:** GitHub Actions → Amazon ECR → self-hosted EC2 runner
 - **Testing:** pytest
